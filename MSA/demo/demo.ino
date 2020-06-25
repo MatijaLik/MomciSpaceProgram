@@ -24,7 +24,7 @@ const int LED_GREEN = -1; //digitalni
 const int LED_BLUE = -1;  //digitalni
 
 const int PIEZO_PIN = -1;  //mora imeti PWM
-const int CS_PIN() = -1;   // googlaj
+const int CS_PIN = -1;   // googlaj
 const int BUTTON_PIN = -1; //naj bo digitalni
 
 const int SERVO_PIN = -1;         //PWM, verjetno
@@ -33,6 +33,8 @@ const int SERVO_LOCKED_ANGLE = 180;
 
 const int LIFTOFF_TRESHOLD = -1;//stage shifting
 const int BURNOUT_TRESHOLD = -1;
+const int DEPLOY_ALTITUDE = -1; //na keri visine fukne padala
+const int GROUND_ALTITUDE = -1;// visina tal (relativna)
 
 //SETTING END
 
@@ -41,7 +43,7 @@ int stage = 0;
 double pressure;
 
 double altitude;
-double ciganQueue[OPERATING_FREQUENCY];
+double ciganQueue[OPERATING_FREQUENCY+1];
 
 double LAvelocity = 0;
 double Vvelocity = 0;
@@ -57,8 +59,8 @@ double GyX;
 double GyY;
 double GyZ;
 
-Barometer barometer();
-Gyros gyros();
+Barometer barometer;
+Gyros gyros;
 SocialniDemokrati socialniDemokrati(CS_PIN);
 Servo servo;
 
@@ -68,7 +70,7 @@ bool barometerReferenceSet = false;
 void pinSetup()
 {
     pinMode(LED_RED, OUTPUT);
-    pinMode(LED_GREE, OUTPUT);
+    pinMode(LED_GREEN, OUTPUT);
     pinMode(LED_BLUE, OUTPUT);
     pinMode(PIEZO_PIN, OUTPUT);
     pinMode(BUTTON_PIN, INPUT);
@@ -76,7 +78,7 @@ void pinSetup()
 
 void ciganQueueSetup()
 {
-    for (int i = 0; i < OPERATING_FREQUENCY; i++)
+    for (int i = 0; i < OPERATING_FREQUENCY+1; i++)
         ciganQueue[i] = 0.0;
 }
 
@@ -107,15 +109,17 @@ void ringPiezo()
     delay(1000);
 }
 
-void ciganPushFront(doube value)
+void ciganPushFront(double value)
 {
     /*
     Uglaunem Arduino ne podpira queue strukture
     Zato pripravimo array, ki se obnasa kot queue.
     Pri push front pa vsaki element rocno prestavimo za eno naprej
     */
-    for (int i = OPERATING_FREQUENCY - 1; i > 0)
-        ciganQueue[i] = ciganQueue[i - 1];
+    for (int i = OPERATING_FREQUENCY; i > 0; i++){
+      ciganQueue[i] = ciganQueue[i - 1];
+    }
+        
     ciganQueue[0] = value;
 }
 
@@ -137,14 +141,14 @@ void updateSensorValues()
 
     //Gyros
     gyros.refresh();
-    AcX = gyros.AcX;
-    Acy = gyros.AcY;
-    AcZ = gyros.AcZl
-              GyX = gyros.GyX;
-    GyY = gyros.GyY;
-    GyZ = gyros.GyZ;
+    AcX = gyros.getAcX();
+    AcY = gyros.getAcY();
+    AcZ = gyros.getAcZ();
+    GyX = gyros.getGyX();
+    GyY = gyros.getGyY();
+    GyZ = gyros.getGyZ();
     pitch = gyros.getPitch();
-    roll = gyros.getRoll();
+    yaw = gyros.getYaw();
 
     //velocity je integral AcZ po dt
     LAvelocity += AcZ * TIME_INTERVAL;
@@ -170,7 +174,11 @@ void writeOnSd()
         AcZ,
         GyX,
         GyY,
-        GyZ)
+        GyZ);
+}
+
+void deployChutes(){
+    servo.write(SERVO_DEPLOY_ANGLE);
 }
 
 void idle()
@@ -193,7 +201,7 @@ void idle()
 
 void armed(){
     //Utripa rdeca
-    if(floor(time)%2) toggleLED(1, 0, 0);
+    if(int(time)%2) toggleLED(1, 0, 0);
     else toggleLED(0,0,0);
 
     //Nastavi barometer reference point
@@ -207,6 +215,60 @@ void armed(){
 
     //Prestopi v POWERED FLIGHT
     if(AcZ >= LIFTOFF_TRESHOLD) stage = 2;
+}
+
+void poweredFlight(){
+
+    toggleLED(0, 1, 1);//cyan
+
+    updateSensorValues();
+    writeOnSd();
+
+    //Prestopi v UNPOWERED FLIGHT
+    if(AcZ <= BURNOUT_TRESHOLD) stage = 3;
+}
+
+void unpoweredFlight(){
+    toggleLED(1, 0, 1);//purple
+
+    updateSensorValues();
+    writeOnSd();
+
+    //Prestopi v BALLISTIC DESCENT
+    //Pogoj: visina je manj kot pred 1s
+    if(altitude < ciganQueue[OPERATING_FREQUENCY]) stage = 4;
+}
+
+void ballisticDescent(){
+    toggleLED(1, 0, 0);//rdeca
+
+    updateSensorValues();
+    writeOnSd();
+
+    //Prestopi v CHTUE DESCENT
+    //Pogoj: visina je manj kot nek treshold
+    if(altitude <= DEPLOY_ALTITUDE){
+        deployChutes;
+        stage = 5;
+    }
+}
+
+void chuteDescent(){
+    toggleLED(1, 1, 0);//rumena
+
+    updateSensorValues();
+    writeOnSd();
+
+    //Prestopi v CHTUE DESCENT
+    //Pogoj: visina je manj kot nek treshold
+    if(altitude <= GROUND_ALTITUDE){
+        stage = 6;
+    }
+}
+
+void landed(){
+    toggleLED(0,1,0);// zelena
+    ringPiezo();
 }
 
 void setup()
@@ -231,9 +293,21 @@ void loop()
     case 1:
         armed();
         break;
-    default:
-
+    case 2:
+        poweredFlight();
+        break;
+    case 3:
+        unpoweredFlight();
+       break;
+    case 4:
+        ballisticDescent();
+        break;
+    case 5:
+        deployChutes();
+        break;
+    case 6:
         landed();
+        break;
     }
     delayMicroseconds(DELAY_INTERVAL);
 }

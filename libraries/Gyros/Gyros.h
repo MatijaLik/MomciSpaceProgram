@@ -22,7 +22,7 @@ public:
     double getAcY();
     double getAcZ();
     double getPitch(); 
-    double getRoll();
+    double getYaw();
 
 private:
     int16_t _AcX, _AcY, _AcZ, _GyX, _GyY, _GyZ;

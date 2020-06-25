@@ -14,7 +14,7 @@ class Barometer
 public:
     Barometer();
     double getPressure();
-    double setPressureReference();
+    void setPressureReference();
     double getAbsAltitute();
     double getRelAltitude();
     const double STANDARD_PRESSURE;

@@ -29,7 +29,7 @@ double Barometer::getPressure(){
     return _bmp.readPressure();
 }
 
-double Barometer::setPressureReference(){
+void Barometer::setPressureReference(){
     //Nastavi trenutni tlak v hPa kot referencno tocko
     _referencePressure = _bmp.readPressure()/ 100.0;
 }

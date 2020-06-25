@@ -79,7 +79,7 @@ double Gyros::getPitch()
 }
 
 //Vrne roll v stopinjah
-double Gyros::getRoll(){
+double Gyros::getYaw(){
     double x = _AcX;
     double y = _AcY;
     double z = _AcZ;
