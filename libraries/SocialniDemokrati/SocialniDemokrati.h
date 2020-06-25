@@ -18,7 +18,8 @@ public:
     String stage,
     double pressure,
     double altitude,
-    double velocity,
+    double Vvelocity,
+    double LAvelocity,
 
     double pitch,
     double yaw,

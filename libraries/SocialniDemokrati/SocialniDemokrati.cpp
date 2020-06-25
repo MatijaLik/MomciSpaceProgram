@@ -35,7 +35,7 @@ Gyroscope (pitch, yaw, roll)
 
 void SocialniDemokrati::_headerString()
 {
-    String s = "Time,Stage,Air pressure,Altitude,Velocity,Pitch,Yaw,AcX,AcY,AcZ,GyX,GyY,GyZ";
+    String s = "Time,Stage,Air pressure,Altitude,Vertical velocity,Longitudal axis velocity,Pitch,Yaw,AcX,AcY,AcZ,GyX,GyY,GyZ";
     _saveData(s);
 }
 
@@ -44,7 +44,8 @@ void SocialniDemokrati::logData(
     String stage,
     double pressure,
     double altitude,
-    double velocity,
+    double Vvelocity,
+    double LAvelocity,
 
     double pitch,
     double yaw,
@@ -62,7 +63,8 @@ void SocialniDemokrati::logData(
     s += stage + ",";
     s = _appendToString(s, pressure);
     s = _appendToString(s, altitude);
-    s = _appendToString(s, velocity);
+    s = _appendToString(s, Vvelocity);
+    s = _appendToString(s, LAvelocity);
 
     s = _appendToString(s, pitch);
     s = _appendToString(s, yaw);
