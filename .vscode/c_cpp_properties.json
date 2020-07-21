@@ -9,7 +9,14 @@
             "forcedInclude": [
                 "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
             ],
+<<<<<<< HEAD
             "intelliSenseMode": "msvc-x64"
+=======
+            "intelliSenseMode": "msvc-x64",
+            "compilerPath": "C:\\cygnus\\cygwin-b20\\H-i586-cygwin32\\bin\\gcc.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+>>>>>>> e82b9bab6762cf8582ef04469cca94bca47a9fb4
         }
     ],
     "version": 4

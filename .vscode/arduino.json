@@ -1,7 +1,13 @@
 {
+<<<<<<< HEAD
     "programmer": "AVRISP mkII",
     "board": "arduino:avr:nano",
     "configuration": "cpu=atmega328",
     "port": "COM3",
     "sketch": "demo\\demo.ino"
+=======
+    "board": "arduino:avr:nano",
+    "configuration": "cpu=atmega328",
+    "sketch": "MSA\\demo.ino"
+>>>>>>> e82b9bab6762cf8582ef04469cca94bca47a9fb4
 }
