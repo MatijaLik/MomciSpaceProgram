@@ -10,6 +10,10 @@
 #include <Wire.h>
 #include <math.h>
 
+#include <Adafruit_MPU6050.h>
+#include <Adafruit_Sensor.h>
+#include <Wire.h>
+
 class Gyros
 {
 public:
@@ -24,8 +28,6 @@ public:
     double getPitch(); 
     double getYaw();
 
-private:
-    int16_t _AcX, _AcY, _AcZ, _GyX, _GyY, _GyZ;
 };
 
 #endif

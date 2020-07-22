@@ -33,7 +33,7 @@ void loop() {
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
 
-  double resultant = sqrt(a.acceleration.z * a.acceleration.z + a.acceleration.y*a.acceleration.y + a.acceleration.x*a.acceleration.x);
+  double resultant = sqrt(a.acceleration.x * a.acceleration.x + a.acceleration.y*a.acceleration.y + a.acceleration.z*a.acceleration.z);
   
   /* Print out the values */
   

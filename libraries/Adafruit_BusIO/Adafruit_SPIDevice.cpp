@@ -46,7 +46,6 @@ Adafruit_SPIDevice::Adafruit_SPIDevice(int8_t cspin, int8_t sckpin,
   _sck = sckpin;
   _miso = misopin;
   _mosi = mosipin;
-<<<<<<< HEAD
 
 #ifdef BUSIO_USE_FAST_PINIO
   csPort = (BusIO_PortReg *)portOutputRegister(digitalPinToPort(cspin));
@@ -63,8 +62,6 @@ Adafruit_SPIDevice::Adafruit_SPIDevice(int8_t cspin, int8_t sckpin,
   clkPinMask = digitalPinToBitMask(sckpin);
 #endif
 
-=======
->>>>>>> e82b9bab6762cf8582ef04469cca94bca47a9fb4
   _freq = freq;
   _dataOrder = dataOrder;
   _dataMode = dataMode;
@@ -119,7 +116,6 @@ void Adafruit_SPIDevice::transfer(uint8_t *buffer, size_t len) {
     return;
   }
 
-<<<<<<< HEAD
   uint8_t startbit;
   if (_dataOrder == SPI_BITORDER_LSBFIRST) {
     startbit = 0x1;
@@ -130,8 +126,6 @@ void Adafruit_SPIDevice::transfer(uint8_t *buffer, size_t len) {
   bool towrite, lastmosi = !(buffer[0] & startbit);
   uint8_t bitdelay_us = (1000000 / _freq) / 2;
 
-=======
->>>>>>> e82b9bab6762cf8582ef04469cca94bca47a9fb4
   // for softSPI we'll do it by hand
   for (size_t i = 0; i < len; i++) {
     // software SPI
@@ -144,7 +138,6 @@ void Adafruit_SPIDevice::transfer(uint8_t *buffer, size_t len) {
     Serial.print(" -> 0x");
     */
 
-<<<<<<< HEAD
     // Serial.print(send, HEX);
     for (uint8_t b = startbit; b != 0;
          b = (_dataOrder == SPI_BITORDER_LSBFIRST) ? b << 1 : b >> 1) {
@@ -235,53 +228,6 @@ void Adafruit_SPIDevice::transfer(uint8_t *buffer, size_t len) {
         buffer[i] = reply;
       }
     }
-=======
-    if (_dataOrder == SPI_BITORDER_LSBFIRST) {
-      // LSB is rare, if it happens we'll just flip the bits around for them
-      uint8_t temp = 0;
-      for (uint8_t b = 0; b < 8; b++) {
-        temp |= ((send >> b) & 0x1) << (7 - b);
-      }
-      send = temp;
-    }
-    // Serial.print(send, HEX);
-    for (int b = 7; b >= 0; b--) {
-      reply <<= 1;
-      if (_dataMode == SPI_MODE0 || _dataMode == SPI_MODE2) {
-        if (_mosi != -1) {
-          digitalWrite(_mosi, send & (1 << b));
-        }
-        digitalWrite(_sck, HIGH);
-        if ((_miso != -1) && digitalRead(_miso)) {
-          reply |= 1;
-        }
-        digitalWrite(_sck, LOW);
-      }
-      if (_dataMode == SPI_MODE1 || _dataMode == SPI_MODE3) {
-        digitalWrite(_sck, HIGH);
-        if (_mosi != -1) {
-          digitalWrite(_mosi, send & (1 << b));
-        }
-        digitalWrite(_sck, LOW);
-        if ((_miso != -1) && digitalRead(_miso)) {
-          reply |= 1;
-        }
-      }
-    }
-
-    // Serial.print(" : 0x"); Serial.print(reply, HEX);
-    if (_dataOrder == SPI_BITORDER_LSBFIRST) {
-      // LSB is rare, if it happens we'll just flip the bits around for them
-      uint8_t temp = 0;
-      for (uint8_t b = 0; b < 8; b++) {
-        temp |= ((reply >> b) & 0x1) << (7 - b);
-      }
-      reply = temp;
-    }
-    // Serial.print(" -> "); Serial.println(reply, HEX);
-
-    buffer[i] = reply;
->>>>>>> e82b9bab6762cf8582ef04469cca94bca47a9fb4
   }
   return;
 }
@@ -298,7 +244,6 @@ uint8_t Adafruit_SPIDevice::transfer(uint8_t send) {
 }
 
 /*!
-<<<<<<< HEAD
  *    @brief  Manually begin a transaction (calls beginTransaction if hardware
  * SPI)
  */
@@ -318,8 +263,6 @@ void Adafruit_SPIDevice::endTransaction(void) {
 }
 
 /*!
-=======
->>>>>>> e82b9bab6762cf8582ef04469cca94bca47a9fb4
  *    @brief  Write a buffer or two to the SPI device.
  *    @param  buffer Pointer to buffer of data to write
  *    @param  len Number of bytes from buffer to write

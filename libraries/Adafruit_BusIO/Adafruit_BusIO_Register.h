@@ -35,10 +35,7 @@ public:
   bool read(uint8_t *value);
   bool read(uint16_t *value);
   uint32_t read(void);
-<<<<<<< HEAD
   uint32_t readCached(void);
-=======
->>>>>>> e82b9bab6762cf8582ef04469cca94bca47a9fb4
   bool write(uint8_t *buffer, uint8_t len);
   bool write(uint32_t value, uint8_t numbytes = 0);
 
@@ -55,10 +52,7 @@ private:
   uint8_t _width, _addrwidth, _byteorder;
   uint8_t _buffer[4]; // we wont support anything larger than uint32 for
                       // non-buffered read
-<<<<<<< HEAD
   uint32_t _cached = 0;
-=======
->>>>>>> e82b9bab6762cf8582ef04469cca94bca47a9fb4
 };
 
 /*!

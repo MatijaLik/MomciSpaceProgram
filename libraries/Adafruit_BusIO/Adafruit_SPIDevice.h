@@ -29,7 +29,6 @@ typedef enum _BitOrder {
 #define SPI_BITORDER_LSBFIRST LSBFIRST
 #endif
 
-<<<<<<< HEAD
 #if defined(__AVR__) || defined(TEENSYDUINO)
 typedef volatile uint8_t BusIO_PortReg;
 typedef uint8_t BusIO_PortMask;
@@ -51,8 +50,6 @@ typedef uint32_t BusIO_PortMask;
 #undef BUSIO_USE_FAST_PINIO
 #endif
 
-=======
->>>>>>> e82b9bab6762cf8582ef04469cca94bca47a9fb4
 /**! The class which defines how we will talk to this device over SPI **/
 class Adafruit_SPIDevice {
 public:
@@ -75,11 +72,8 @@ public:
 
   uint8_t transfer(uint8_t send);
   void transfer(uint8_t *buffer, size_t len);
-<<<<<<< HEAD
   void beginTransaction(void);
   void endTransaction(void);
-=======
->>>>>>> e82b9bab6762cf8582ef04469cca94bca47a9fb4
 
 private:
   SPIClass *_spi;
@@ -89,13 +83,10 @@ private:
   uint8_t _dataMode;
 
   int8_t _cs, _sck, _mosi, _miso;
-<<<<<<< HEAD
 #ifdef BUSIO_USE_FAST_PINIO
   BusIO_PortReg *mosiPort, *clkPort, *misoPort, *csPort;
   BusIO_PortMask mosiPinMask, misoPinMask, clkPinMask, csPinMask;
 #endif
-=======
->>>>>>> e82b9bab6762cf8582ef04469cca94bca47a9fb4
   bool _begun;
 };
 
