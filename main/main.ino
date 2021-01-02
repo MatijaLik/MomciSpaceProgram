@@ -5,8 +5,6 @@
 #include <SD.h>
 #include <avr/wdt.h>
 
-//#include <SocialniDemokrati.h>
-
 String stageToString[] = {
     "IDLE",
     "ARMED",
@@ -45,7 +43,8 @@ double unitMatrix[3][3] =
     {
         {1, 0, 0},
         {0, 1, 0},
-        {0, 0, 1}};
+        {0, 0, 1}
+    };
 
 //SETTING END
 
@@ -73,7 +72,7 @@ String FILENAME;
 Adafruit_BMP280 barometer(BMP_CS, BMP_MOSI, BMP_MISO, BMP_SCK);
 Adafruit_MPU6050 gyros;
 sensors_event_t a, g, temp;
-//SocialniDemokrati socialniDemokrati(CS_PIN);
+
 Servo servo;
 File f;
 
@@ -153,6 +152,13 @@ double getYaw()
     return _yaw;
 }
 
+
+/**
+ * Množenje matrike z vektorjem
+ * @param m 3x3 array
+ * @param vector array dolžine 3 
+ * @return array dolžine 3 
+ **/
 void linearTransormation(double (&m)[3][3], double (&vector)[3])
 {
     double v[] = {vector[0], vector[1], vector[2]};
@@ -239,6 +245,13 @@ void incrementTime()
     cas = nextTime;
 }
 
+
+/**
+ * 1. Posodobi altmeter
+ * 2. Posodobi accelerometer in žiroskop
+ * 3. Kalibrira podatke z rotacisjkima matrikama 
+ * 4. Vstavi višino v cigan queue 
+ * */
 void updateSensorValues()
 {
     //Barometer
@@ -331,7 +344,9 @@ void readFromSerial()
         int incomingByte = Serial.read();
     }
 }
-
+/**
+ * Dela točno to, kar misliš, da dela.
+ * */
 void printMatrix(double (&m)[3][3])
 {
     for (int i = 0; i < 3; i++)
@@ -345,6 +360,9 @@ void printMatrix(double (&m)[3][3])
     }
 }
 
+/**
+ * Debugging info
+ * */
 void writeToSerial()
 {
     Serial.print("STAGE: ");
@@ -438,12 +456,21 @@ void writeOnSd()
     f.println(s);
 }
 
+/**
+ * Prestavi servo na SERVO_DEPLOY_ANGLE
+ * */
 void deployChutes()
 {
     Serial.println("DEPLOYING CHUTES");
     servo.write(SERVO_DEPLOY_ANGLE);
 }
 
+
+/**
+ * Raketa miruje
+ * Moder LED
+ * V armed način se prestavi, ko 3s držimo tipko na BUTTON_PIN
+ * */
 void idle()
 {
     toggleLED(0, 0, 1);
@@ -462,6 +489,15 @@ void idle()
         stage = 1;
 }
 
+/**
+ * Raketa je pripravljena na vzlet
+ * Rdeči LED utripa
+ * Kalibrira barometer
+ * Kalibrira matrike
+ * Začne meritve in beleženje na SD
+ * 
+ * V powered flight način se prestavi, ko pospešek preseže LIFTOFF_TRESHOLD
+ * */
 void armed()
 {
     //Utripa rdeca
@@ -488,6 +524,13 @@ void armed()
         stage = 2;
 }
 
+/**
+ * Raketa je v letu
+ * Cyan LED
+ * Meritve in beleženje na SD
+ * 
+ * V unpowered flight način se prestavi, ko pospešek pade pod BURNOUT_TRESHOLD
+ * */
 void poweredFlight()
 {
     toggleLED(0, 1, 1); //cyan
@@ -500,6 +543,14 @@ void poweredFlight()
         stage = 3;
 }
 
+
+/**
+ * Raketa je v letu
+ * Vijoličen LED
+ * Meritve in beleženje na SD
+ * 
+ * V ballistic descent se prestavi, ko je trenutna visina manjsa kot višina pred 1s
+ * */
 void unpoweredFlight()
 {
     toggleLED(1, 0, 1); //purple
@@ -514,6 +565,14 @@ void unpoweredFlight()
         stage = 4;
 }
 
+
+/**
+ * Raketa je v padcu
+ * Rdeč LED
+ * Meritve in beleženje na SD
+ * 
+ * V chute descent se prestavi, ko je trenutna visina manjsa od DEPLOY_ALTITUDE
+ * */
 void ballisticDescent()
 {
     toggleLED(1, 0, 0); //rdeca
@@ -530,6 +589,14 @@ void ballisticDescent()
     }
 }
 
+/**
+ * Raketa je v padcu
+ * Rdeč LED
+ * Meritve in beleženje na SD
+ * 
+ * V chute descent se prestavi, ko je trenutna visina manjsa od GROUND_ALTITUDE
+ * 
+ * */
 void chuteDescent()
 {
     toggleLED(1, 1, 0); //rumena
@@ -546,6 +613,13 @@ void chuteDescent()
     }
 }
 
+/**
+ * Raketa je na tleh
+ * Zelena LED
+ * Konec meritev in beleženje
+ * Piezo piska
+ * 
+ * */
 void landed()
 {
     toggleLED(0, 1, 0); // zelena
